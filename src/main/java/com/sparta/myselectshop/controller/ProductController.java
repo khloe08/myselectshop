@@ -7,6 +7,7 @@ import com.sparta.myselectshop.dto.ProductResponseDto;
 import com.sparta.myselectshop.security.UserDetailsImpl;
 import com.sparta.myselectshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class ProductController {
 
 
     @GetMapping("/products")
-    public List<ProductResponseDto> getProducts(
+    public Page<ProductResponseDto> getProducts(
             @RequestParam ("page") int page,
             @RequestParam ("size") int size,
             @RequestParam ("sortBy") String sortBy,
@@ -45,6 +46,13 @@ public class ProductController {
     }
 
 
+    @PostMapping("/products/{productId}/folder")
+    public void addFolder(@PathVariable Long productId,
+                          @RequestParam Long folderId,
+                          @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+      productService.addFolder(productId, folderId, userDetails.getUser());
+    }
 
 
 
