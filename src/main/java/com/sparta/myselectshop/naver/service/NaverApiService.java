@@ -10,6 +10,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -20,10 +21,15 @@ import java.util.List;
 @Service
 public class NaverApiService {
 
-    private final RestTemplate restTemplate;
+    //private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
-    public NaverApiService(RestTemplateBuilder builder) {
+  /*  public NaverApiService(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();
+    }*/
+
+    public NaverApiService(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public List<ItemDto> searchItems(String query) {
@@ -36,15 +42,32 @@ public class NaverApiService {
                 .encode()
                 .build()
                 .toUri();
+
+
         log.info("uri = " + uri);
 
-        RequestEntity<Void> requestEntity = RequestEntity
+      /* RequestEntity<Void> requestEntity = RequestEntity
                 .get(uri)
                 .header("X-Naver-Client-Id", "2dcdoPt2RkkTlDj_O2Nr")
                 .header("X-Naver-Client-Secret", "jInoygcpsH")
                 .build();
 
+
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+        */
+
+       WebClient webClient = WebClient.builder()
+                .baseUrl(uri.toString())
+                .defaultHeader("X-Naver-Client-Id", "2dcdoPt2RkkTlDj_O2Nr")
+                .defaultHeader("X-Naver-Client-Secret", "jInoygcpsH")
+                .build();
+
+        ResponseEntity<String> responseEntity = webClient.get()
+                                                .uri(uri.toString())
+                                                .retrieve()
+                                                .toEntity(String.class)
+                                                .block();
+
 
         log.info("NAVER API Status Code : " + responseEntity.getStatusCode());
 
