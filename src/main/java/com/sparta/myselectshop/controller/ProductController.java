@@ -1,13 +1,16 @@
 package com.sparta.myselectshop.controller;
 
 
+import com.sparta.myselectshop.dto.PagedResponse;
 import com.sparta.myselectshop.dto.ProductMypriceRequestDto;
 import com.sparta.myselectshop.dto.ProductRequestDto;
 import com.sparta.myselectshop.dto.ProductResponseDto;
+import com.sparta.myselectshop.entity.Product;
 import com.sparta.myselectshop.security.UserDetailsImpl;
 import com.sparta.myselectshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +34,7 @@ public class ProductController {
     }
 
 
-    @GetMapping("/products")
+/*    @GetMapping("/products")
     public Page<ProductResponseDto> getProducts(
             @RequestParam ("page") int page,
             @RequestParam ("size") int size,
@@ -41,6 +44,19 @@ public class ProductController {
         return productService.getProducts(userDetails.getUser(),
                 page-1, size, sortBy, isAsc
                 );
+    }*/
+
+    @GetMapping("/products")
+    public ResponseEntity<PagedResponse<ProductResponseDto>> getProducts(
+            @RequestParam ("page") int page,
+            @RequestParam ("size") int size,
+            @RequestParam ("sortBy") String sortBy,
+            @RequestParam ("isAsc") boolean isAsc,
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Page<ProductResponseDto> products =  productService.getProducts(userDetails.getUser(),
+                page-1, size, sortBy, isAsc
+        );
+        return ResponseEntity.ok(new PagedResponse<>(products));
     }
 
 
